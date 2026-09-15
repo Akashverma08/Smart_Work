@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SmartcTask</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+    <header class="header">
+        <h1>Smart Work management</h1>
+    </header>
+    <div>
+        <h2>Dashboard</h2>
+        <diV id="dashboard">
+
+            <div class="cards">Total Task: <b id="totalTask">3</b></div>
+            <div class="cards">Todo : <b id="Todo"></b></div>
+            <div class="cards">In progress : <b id="inprogess"></b></div>
+            <div class="cards">Completed :<b id="completed"></b></div>
+        </diV>
+    </div>
+    <div id="filter">
+        <label for="taskFilter">
+            <h2>Filter tasks</h2>
+        </label>
+        <div>
+            <input id="taskFilter" type="text" placeholder="Search id, Assign, tags, Priority...">
+
+            <div id="dropList">
+                <label for="drop">Filter By:</label>
+
+                <select id="drop">
+                    <option value="id">ID</option>
+                    <option value="title">Title</option>
+                    <option value="assignee">Assign</option>
+                    <option value="status">Status</option>
+                    <option value="priority">Priority</option>
+                    <option value="tags">Tags</option>
+                </select>
+
+                <!-- Second dropdown -->
+                <select id="subDrop" title="Filter value" aria-label="Filter value">
+                    <option value="">Select</option>
+                </select>
+
+                <button type="button" id="applyFilter">Apply Filter</button>
+            </div>
+
+
+        </div>
+
+
+        <div>
+
+
+        </div>
+
+
+
+        <div>
+
+
+            <div id="task">
+                <h2>Task list</h2>
+                <table>
+                    <tr>
+                        <th>id</th>
+                        <th>Title</th>
+                        <th>Assign</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Tags</th>
+                        <th>Actions</th>
+                    </tr>
+                    <tbody id="taskTable"></tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+        <form id="addTaskForm">
+
+            <h2>Add New Task</h2>
+
+
+            <label for="title">Task Title</label>
+            <input type="text" id="title" name="title">
+
+            <label for="assignee">Assignee</label>
+            <input type="text" id="assignee" name="assignee">
+
+            <label for="formStatus">Status</label>
+            <select id="formStatus" name="status">
+                <option value="">Select</option>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+
+            <label for="formPriority">Priority</label>
+            <select id="formPriority" name="priority">
+                <option value="">Select</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+            </select>
+
+            <label for="formTags">Tags</label>
+            <input type="text" id="formTags" name="tags" placeholder="Frontend, React, JavaScript">
+
+            <button type="submit">Create Task</button>
+
+        </form>
+        <script src="script.js"></script>
+</body>
+
+</html>
