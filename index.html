@@ -15,13 +15,13 @@
     </header>
     <div>
         <h2>Dashboard</h2>
-        <diV id="dashboard">
+        <div id="dashboard">
 
             <div class="cards">Total Task: <b id="totalTask">3</b></div>
             <div class="cards">Todo : <b id="Todo"></b></div>
-            <div class="cards">In progress : <b id="inprogess"></b></div>
+            <div class="cards">In progress : <b id="inProgress"></b></div>
             <div class="cards">Completed :<b id="completed"></b></div>
-        </diV>
+        </div>
     </div>
     <div id="filter">
         <label for="taskFilter">
@@ -42,7 +42,7 @@
                     <option value="tags">Tags</option>
                 </select>
 
-                <!-- Second dropdown -->
+                
                 <select id="subDrop" title="Filter value" aria-label="Filter value">
                     <option value="">Select</option>
                 </select>
@@ -89,21 +89,21 @@
 
 
             <label for="title">Task Title</label>
-            <input type="text" id="title" name="title">
+            <input type="text" id="title" name="title" required>
 
             <label for="assignee">Assignee</label>
-            <input type="text" id="assignee" name="assignee">
+            <input type="text" id="assignee" name="assignee" required>
 
             <label for="formStatus">Status</label>
-            <select id="formStatus" name="status">
+            <select id="formStatus" name="status" required>
                 <option value="">Select</option>
-                <option value="To Do">To Do</option>
+                <option value="Todo">To Do</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Completed">Completed</option>
             </select>
 
             <label for="formPriority">Priority</label>
-            <select id="formPriority" name="priority">
+            <select id="formPriority" name="priority" required>
                 <option value="">Select</option>
                 <option value="High">High</option>
                 <option value="Medium">Medium</option>
@@ -111,7 +111,7 @@
             </select>
 
             <label for="formTags">Tags</label>
-            <input type="text" id="formTags" name="tags" placeholder="Frontend, React, JavaScript">
+            <input type="text" id="formTags" name="tags" placeholder="Frontend, React, JavaScript" required>
 
             <button type="submit">Create Task</button>
 

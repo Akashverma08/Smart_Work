@@ -1,4 +1,4 @@
-const tasks=[];
+const tasks = [];
 
 // Get tasks saved from Add Task page
 const savedTasks = JSON.parse(localStorage.getItem("tasks"));
@@ -8,127 +8,99 @@ if (savedTasks) {
     tasks.push(...savedTasks);
 }
 
-//Dashboard Data 
+// Dashboard Data
+function updateDashboard() {
+    const resultStats = tasks.reduce((ac, cur) => {
+        if (cur.status === "Completed") {
+            ac.completed++;
+        } else if (cur.status === "Todo") {
+            ac.toDo++;
+        } else if (cur.status === "In Progress") {
+            ac.progress++;
+        }
 
-let todo = 0;
-let progress = 0;
-let complete = 0;
+        return ac;
+    }, {
+        toDo: 0,
+        completed: 0,
+        progress: 0
+    });
 
-const resultStats = tasks.reduce((ac, cur) => {
+    document.getElementById("totalTask").innerHTML = `<b>${tasks.length}</b>`;
+    document.getElementById("Todo").innerHTML = `<b>${resultStats.toDo}</b>`;
+    document.getElementById("inProgress").innerHTML = `<b>${resultStats.progress}</b>`;
+    document.getElementById("completed").innerHTML = `<b>${resultStats.completed}</b>`;
+}
 
-    if (cur.status === "Completed") {
-        ac.completed++;
-    }
-    else if (cur.status === "To Do") {
-        ac.toDo++;
-    }
-    else if (cur.status === "In Progress") {
-        ac.progress++;
-    }
-
-    return ac;
-
-}, {
-    toDo: 0,
-    completed: 0,
-    progress: 0
-});
-
-console.log(resultStats);
-
-document.getElementById("totalTask").innerHTML = `<b>${tasks.length}</b>`;
-document.getElementById("Todo").innerHTML = `<b>${resultStats.toDo}</b>`;
-document.getElementById("inprogess").innerHTML = `<b>${resultStats.progress}</b>`;
-document.getElementById("completed").innerHTML = `<b>${resultStats.completed}</b>`;
-
-
-
-//display
-
-const id = tasks.map((e) => [e.id, e.title, e.assignee, e.status, e.priority, e.tags]);
-
-
-
+// Display
 const table = document.getElementById("taskTable");
 
 function allData() {
     const row = tasks.map((e) => `
-                  <tr>
-                     <td>${e.id}</td>
-                     <td>${e.title}</td>
-                     <td>${e.assignee}</td>
-                     <td>${e.status}</td>
-                     <td>${e.priority}</td>
-                     <td>${e.tags.join(", ")}</td>
-                     <td>
-                        <button onclick="editTask(${e.id})">Edit</button>
-                        <button onclick="deleteTask(${e.id})">Delete</button>
-                     </td>
+        <tr>
+            <td>${e.id}</td>
+            <td>${e.title}</td>
+            <td>${e.assignee}</td>
+            <td>${e.status}</td>
+            <td>${e.priority}</td>
+            <td>${e.tags.join(", ")}</td>
+            <td>
+                <button onclick="editTask(${e.id})">Edit</button>
+                <button onclick="deleteTask(${e.id})">Delete</button>
+            </td>
+        </tr>
+    `);
 
-                  </tr>
-
-                `)
-
-
-
-    table.innerHTML = row.join(" ")
-
+    table.innerHTML = row.join(" ");
 }
 
-
-
-//Delete 
-
+// Delete
 function deleteTask(id) {
     const del = tasks.filter((e) => e.id !== id);
 
-
     tasks.length = 0;
     tasks.push(...del);
-    localStorage.setItem("tasks", JSON.stringify(del));
+
+    localStorage.setItem("tasks", JSON.stringify(tasks));
 
     allData();
+    updateDashboard();
 }
 
-
-
-// Edit  Task
-
+// Edit Task
 function editTask(id) {
     const task = tasks.find((e) => e.id === id);
-    console.log(task);
 
     const form = document.createElement("form");
 
     form.innerHTML = `
-    <h2>Edit task</h2>
+        <h2>Edit task</h2>
 
+        <label>Task Title</label>
+        <input type="text" id="editTitle" value="${task.title}" required>
 
-    <label>Task Title</label>
-    <input type="text" id="editTitle" value="${task.title}">
+        <label>Assignee</label>
+        <input type="text" id="editAssignee" value="${task.assignee}" required>
 
-    <label>Assignee</label>
-    <input type="text" id="editAssignee" value="${task.assignee}">
-    <label>Status</label>
-    <select id="editStatus">
-        <option value="To Do">To Do</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Completed">Completed</option>
-    </select>
+        <label>Status</label>
+        <select id="editStatus" required>
+            <option value="Todo">To Do</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+        </select>
 
-    <label>Priority</label>
-        <select id="editPriority">
+        <label>Priority</label>
+        <select id="editPriority" required>
             <option value="High">High</option>
             <option value="Medium">Medium</option>
             <option value="Low">Low</option>
         </select>
 
-    <label>Tags</label>
-    <input type="text" id="editTags" value="${task.tags}">
+        <label>Tags</label>
+        <input type="text" id="editTags" value="${task.tags}" required>
 
-    <button type="submit">Update Task</button>
-
-    `
+        <button type="submit">Update Task</button>
+    `;
 
     document.body.appendChild(form);
 
@@ -139,34 +111,44 @@ function editTask(id) {
     form.addEventListener("submit", (event) => {
         event.preventDefault();
 
-        task.id = Number(id);
-        task.title = document.getElementById("editTitle").value;
-        task.assignee = document.getElementById("editAssignee").value;
-        task.status = document.getElementById("editStatus").value;
-        task.priority = document.getElementById("editPriority").value;
-        task.tags = document.getElementById("editTags").value
-            .split(",")
-            .map((tag) => tag.trim());
+        const title = document.getElementById("editTitle").value.trim();
+        const assignee = document.getElementById("editAssignee").value.trim();
+        const status = document.getElementById("editStatus").value;
+        const priority = document.getElementById("editPriority").value;
+
+        const tags = [
+            ...new Set(
+                document.getElementById("editTags").value
+                    .split(",")
+                    .map((tag) => tag.trim())
+                    .filter((tag) => tag !== "")
+            )
+        ];
+
+        if (tags.length === 0) {
+            alert("At least one tag is required");
+            return;
+        }
+
+        task.title = title;
+        task.assignee = assignee;
+        task.status = status;
+        task.priority = priority;
+        task.tags = tags;
 
         localStorage.setItem("tasks", JSON.stringify(tasks));
+
         allData();
+        updateDashboard();
 
         form.remove();
-
-
-
-    })
-
+    });
 }
 
 allData();
+updateDashboard();
 
-console.log(table)
-
-
-
-//Filtering
-
+// Filtering
 const drop = document.getElementById("drop");
 const subDrop = document.getElementById("subDrop");
 const search = document.getElementById("taskFilter");
@@ -174,12 +156,12 @@ const applyFilter = document.getElementById("applyFilter");
 
 // Apply Filter button
 applyFilter.addEventListener("click", () => {
-
     const key = search.value.trim().toLowerCase();
     const selected = drop.value;
     const subValue = subDrop.value;
 
     let filteredData = tasks;
+
     // ID
     if (selected === "id") {
         filteredData = tasks.filter((e) =>
@@ -189,7 +171,6 @@ applyFilter.addEventListener("click", () => {
 
     // Title
     else if (selected === "title") {
-
         filteredData = tasks.filter((e) =>
             e.title.toLowerCase().includes(key)
         );
@@ -213,7 +194,6 @@ applyFilter.addEventListener("click", () => {
 
     // Status
     else if (selected === "status") {
-
         if (subValue === "") {
             allData();
             return;
@@ -222,7 +202,6 @@ applyFilter.addEventListener("click", () => {
         filteredData = tasks.filter((e) =>
             e.status === subValue
         );
-
     }
 
     // Priority
@@ -231,10 +210,12 @@ applyFilter.addEventListener("click", () => {
             allData();
             return;
         }
+
         filteredData = tasks.filter((e) =>
             e.priority === subValue
         );
     }
+
     // Display filtered data
     const filteredRow = filteredData.map((e) => `
         <tr>
@@ -245,33 +226,29 @@ applyFilter.addEventListener("click", () => {
             <td>${e.priority}</td>
             <td>${e.tags.join(", ")}</td>
             <td>
-                <button onclick="editTask(${e.id})" >Edit</button>
+                <button onclick="editTask(${e.id})">Edit</button>
                 <button onclick="deleteTask(${e.id})">Delete</button>
             </td>
         </tr>
     `);
+
     table.innerHTML = filteredRow.join("");
 });
 
-// Show second dropdown 
+// Show second dropdown
 drop.addEventListener("change", () => {
-
     subDrop.innerHTML = `<option value="">Select</option>`;
 
     if (drop.value === "status") {
-
         subDrop.innerHTML = `
             <option value="">Select Status</option>
             <option value="Completed">Completed</option>
-            <option value="To Do">To Do</option>
+            <option value="Todo">To Do</option>
             <option value="In Progress">In Progress</option>
         `;
 
         subDrop.style.display = "inline-block";
-
-    }
-    else if (drop.value === "priority") {
-
+    } else if (drop.value === "priority") {
         subDrop.innerHTML = `
             <option value="">Select Priority</option>
             <option value="High">High</option>
@@ -280,29 +257,34 @@ drop.addEventListener("change", () => {
         `;
 
         subDrop.style.display = "inline-block";
-
-    }
-    else {
-
+    } else {
         subDrop.style.display = "none";
     }
 });
 
-//Add Task
-
-
+// Add Task
 const addTaskForm = document.getElementById("addTaskForm");
 
 addTaskForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const id =tasks.length > 0
-    ? Math.max(...tasks.map(task => task.id)) + 1
-    : 101;
-    const title = document.getElementById("title").value;
-    const assignee = document.getElementById("assignee").value;
+
+    const id = tasks.length > 0
+        ? Math.max(...tasks.map(task => task.id)) + 1
+        : 101;
+
+    const title = document.getElementById("title").value.trim();
+    const assignee = document.getElementById("assignee").value.trim();
     const status = document.getElementById("formStatus").value;
     const priority = document.getElementById("formPriority").value;
-    const tags = document.getElementById("formTags").value.split(",").map((tag) => tag.trim());
+
+    const tags = [
+        ...new Set(
+            document.getElementById("formTags").value
+                .split(",")
+                .map((tag) => tag.trim())
+                .filter((tag) => tag !== "")
+        )
+    ];
 
     const newPerson = {
         id,
@@ -313,20 +295,12 @@ addTaskForm.addEventListener("submit", (event) => {
         tags
     };
 
-    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
-    savedTasks.push(newPerson);
-
-    localStorage.setItem("tasks", JSON.stringify(savedTasks));
-
     tasks.push(newPerson);
 
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+
     allData();
+    updateDashboard();
 
     addTaskForm.reset();
-
-
 });
-
-
-
